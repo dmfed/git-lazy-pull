@@ -136,7 +136,7 @@ def main():
         print("No git repositories found in specifies path. Check whether --depth argument is correct. Exiting...")
         sys.exit(0)
     if args.verbose:
-        print(f"Last update on {datetime.datetime.now()}")
+        print(f"Last update on {datetime.datetime.now()} precessed {len(result)} repositories.")
         for tup in result:
             print(f"{tup[0]} status: {tup[1]}")
     os.chdir(currdir)
