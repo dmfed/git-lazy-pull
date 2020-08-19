@@ -11,9 +11,11 @@ def find_git_repos(path: str, depth=0) -> list:
     .git subdir in them.  
     '''
     if depth == 0:
-        return [path] if check_dir_has_git(path) else []    
-    dirs = [path + os.path.sep + d for d in os.listdir(path) if os.path.isdir(path + os.path.sep + d)]
+        return [path] if check_dir_has_git(path) else [] 
     dirs_with_git = []
+    if check_dir_has_git(path):
+        dirs_with_git.append(path)
+    dirs = [path + os.path.sep + d for d in os.listdir(path) if os.path.isdir(path + os.path.sep + d)]
     for d in dirs:
         dirs_with_git.extend(find_git_repos(d, depth-1))
     return dirs_with_git
