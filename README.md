@@ -11,6 +11,7 @@ See **git-lazy-pull.py --help** for command-line options.
 Examples:
 
 **git-lazy-pull.py ~/mystuff** checks if there is a git repo in **~/mystuff** and does **git pull** in that directory.
+
 **git-lazy-pull.py ~/projects -d 1** will search for git repository in **~/projects** and all of its subdirectories and then try to pull updates in each.
 
 
