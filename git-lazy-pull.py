@@ -122,13 +122,14 @@ def parse_args():
 def main():
     args = parse_args()
     currdir = os.getcwd()
-    if not check_dir_is_valid_path(args.path):
+    workpath = os.path.abspath(args.path)
+    if not check_dir_is_valid_path(workpath):
         print("Invalid path specified (path does not exist or is a file). Exiting...")
         sys.exit(1)
     if args.depth < 0:
         print("Depth can not be less than 0. Exiting...")
         sys.exit(1)
-    result = run_update(args.path, args.depth)
+    result = run_update(workpath, args.depth)
     if len(result) == 0:
         print("No git repositories found in specifies path. Check whether --depth argument is correct. Exiting...")
         sys.exit(0)
