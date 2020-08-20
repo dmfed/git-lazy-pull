@@ -26,8 +26,8 @@ def check_dir_has_git(dirname: str) -> bool:
     Lists files and directories in the given directory
     and returns True if the given directory has ".git" subdir in it.
     ''' 
-    listing = os.listdir(dirname)
-    for d in listing:
+    dirs = os.listdir(dirname)
+    for d in dirs:
         if os.path.isdir(dirname + os.path.sep + d) and d == ".git":
             return True
     return False  
@@ -54,7 +54,7 @@ def run_git_pull(dirname: str) -> int:
 def run_update(path: str, depth: int) -> list:
     '''
     Does the actual update: runs search in specified directory
-    then launches update function for every directory which has .git
+    then launches run_git_pull() function for every directory which has .git
     '''
     print(f"Looking for git reposotories in {path}")
     dirs_with_git = find_git_repos(path, depth)
@@ -75,7 +75,7 @@ def check_dir_is_valid_path(path: str) -> bool:
     '''
     return (os.path.exists(path) and os.path.isdir(path))
 
-def write_log(result: list) -> bool:
+def write_log(status: list) -> bool:
     '''
     Replaces log file $HOME/.git_lazy_pull with most recent result
     of running script.
@@ -88,7 +88,7 @@ def write_log(result: list) -> bool:
     try:
         with open(filename, "w") as f:
             f.write(f"Last update on {datetime.datetime.now()}\n")
-            for tup in result:
+            for tup in status:
                 f.write(f"{tup[0]} status: {tup[1]}\n")
         print(f"Wrote result to {filename}. All ok.")
         return True
@@ -107,7 +107,7 @@ def parse_args():
     description='Looks for git repositories in specified directory (and subdirs up to --depth n) and runs "git pull" in each of them')
     parser.add_argument('path',  metavar='path',
                         help='Where to look for git repositories',
-                        type=str, default=HOME)
+                        type=str)
     parser.add_argument('-d', '--depth',  metavar='number',
                         type=int, default=0,
                         help='If set to 0 only looks in the specified path, if 1 - includes specified path + subdirectories, 2 - includes subdirs of subdirs, etc.')
@@ -131,17 +131,21 @@ def main():
     if args.depth < 0:
         print("Depth can not be less than 0. Exiting...")
         sys.exit(1)
-    result = run_update(workpath, args.depth)
-    if len(result) == 0:
+    status = run_update(workpath, args.depth)
+    if len(status) == 0:
         print("No git repositories found in specifies path. Check whether --depth argument is correct. Exiting...")
         sys.exit(0)
     if args.verbose:
-        print(f"Last update on {datetime.datetime.now()} precessed {len(result)} repositories.")
-        for tup in result:
+        print(f"Last update on {datetime.datetime.now()} precessed {len(status)} repositories.")
+        for tup in status:
             print(f"{tup[0]} status: {tup[1]}")
     os.chdir(currdir)
     if args.log:
-        write_log(result)
+        result = write_log(status)
+        if result:
+            print("Log updated.")
+        else:
+            print("Log not updated.")
     print("All done for now...")
 
 
