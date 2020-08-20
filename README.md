@@ -14,7 +14,7 @@ Examples:
 
 **git-lazy-pull.py ~/projects -d 1** will search for git repository in **~/projects** and all of its subdirectories and then try to pull updates in each.
 
-
+If you want the script to write result to a file, use **git-lazy-pull.py -l 1** or **git-lazy-pull.py -l true**. By default the log is written to $HOME/.git_lazy_pull
 
 
 
