@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 #  Copyright 2020 Dmitry Fedotov <dafedotov@gmail.com>
-#  
+#
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
-#  
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -23,11 +23,11 @@ HOME = os.path.expanduser("~")
 
 def find_git_repos(path: str, depth=0) -> list:
     '''
-    Checks specified path and returns list of subdirectories up to <depth>, which have 
-    .git subdir in them.  
+    Checks specified path and returns list of subdirectories up to <depth>, which have
+    .git subdir in them.
     '''
     if depth == 0:
-        return [path] if check_dir_has_git(path) else [] 
+        return [path] if check_dir_has_git(path) else []
     dirs_with_git = []
     if check_dir_has_git(path):
         dirs_with_git.append(path)
@@ -41,18 +41,18 @@ def check_dir_has_git(dirname: str) -> bool:
     '''
     Lists files and directories in the given directory
     and returns True if the given directory has ".git" subdir in it.
-    ''' 
+    '''
     dirs = os.listdir(dirname)
     for d in dirs:
         if os.path.isdir(dirname + os.path.sep + d) and d == ".git":
             return True
-    return False  
+    return False
 
 
 def run_git_pull(dirname: str) -> int:
     '''
-    Changes current dir to <dirname> and runs git pull. 
-    Returns return code of the command. 
+    Changes current dir to <dirname> and runs git pull.
+    Returns return code of the command.
     '''
     os.chdir(dirname)
     print(f"Changed dir to {dirname}, now running \"git pull\"...")
@@ -131,12 +131,11 @@ def parse_args():
                         type=bool, default=False, metavar='',
                         help='If set (by defaul it is not) writes output to $HOME/.git_updater')
     '''
-    NOT YET IMPLEMENTED
     parser.add_argument('-v', '--verbose',
                         type=bool, default=True, metavar='',
                         help='If set (by default it is) the program echoes output from "git pull" command')
     '''
-    args = parser.parse_args()    
+    args = parser.parse_args()
     return args
 
 
@@ -154,10 +153,10 @@ def main():
     if len(status) == 0:
         print("No git repositories found in specifies path. Check whether --depth argument is correct. Exiting...")
         sys.exit(0)
-    if args.verbose:
-        print(f"Last update on {datetime.datetime.now()} precessed {len(status)} repositories.")
-        for tup in status:
-            print(f"{tup[0]} status: {tup[1]}")
+    #if args.verbose:
+    print(f"Last update on {datetime.datetime.now()} precessed {len(status)} repositories.")
+    for tup in status:
+        print(f"{tup[0]} status: {tup[1]}")
     os.chdir(currdir)
     if args.log:
         result = write_log(status)
