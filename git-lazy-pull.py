@@ -49,35 +49,36 @@ def check_dir_has_git(dirname: str) -> bool:
     return False
 
 
-def run_git_pull(dirname: str) -> int:
+def run_git_pull(dirname: str, verbose=True) -> int:
     '''
     Changes current dir to <dirname> and runs git pull.
-    Returns return code of the command.
+    Returns exit code of the command.
     '''
     os.chdir(dirname)
-    print(f"Changed dir to {dirname}, now running \"git pull\"...")
     proc = sub.run(["git", "pull"], capture_output=True)
-    print(proc.stdout.decode())
-    print(proc.stderr.decode())
-    print(f"\"git pull\" returned {proc.returncode}.", end=" ")
-    if proc.returncode == 0:
-        print("Repo updated.")
-    else:
-        print("Looks like something went wrong...")
+    if verbose:
+        print(f"Changed dir to {dirname}, and issued \"git pull\"...")
+        print(proc.stdout.decode())
+        print(proc.stderr.decode())
+        print(f"\"git pull\" returned {proc.returncode}.", end=" ")
+        if proc.returncode == 0:
+            print("Repo updated.")
+        else:
+            print("Looks like something went wrong...")
     return proc.returncode
 
 
-def run_update(path: str, depth: int) -> list:
+def run_update(path: str, depth: int, verbose=True) -> list:
     '''
     Does the actual update: runs search in specified directory
     then launches run_git_pull() function for every directory which has .git
     '''
-    print(f"Looking for git reposotories in {path}")
     dirs_with_git = find_git_repos(path, depth)
-    print(f"Found {len(dirs_with_git)} repositories")
+    if verbose:
+        print(f"Found {len(dirs_with_git)} repositories in {path}")
     status = []
     for dir in dirs_with_git:
-        result = run_git_pull(dir)
+        result = run_git_pull(dir, verbose=verbose)
         if result == 0:
             result = "updated"
         else:
@@ -91,7 +92,7 @@ def check_dir_is_valid_path(path: str) -> bool:
     '''
     return (os.path.exists(path) and os.path.isdir(path))
 
-def write_log(status: list) -> bool:
+def write_log(status: list, verbose=True) -> bool:
     '''
     Replaces log file $HOME/.git_lazy_pull with most recent result
     of running script.
@@ -106,10 +107,12 @@ def write_log(status: list) -> bool:
             f.write(f"Last update on {datetime.datetime.now()}\n")
             for tup in status:
                 f.write(f"{tup[0]} status: {tup[1]}\n")
-        print(f"Wrote result to {filename}. All ok.")
+        if verbose:
+            print(f"Wrote result to {filename}. All ok.")
         return True
     except:
-        print(f"Failed to write result to {filename}")
+        if verbose:
+            print(f"Failed to write result to {filename}")
         return False
 
 
@@ -128,13 +131,11 @@ def parse_args():
                         type=int, default=0,
                         help='If set to 0 only looks in the specified path, if 1 - includes specified path + subdirectories, 2 - includes subdirs of subdirs, etc.')
     parser.add_argument('-l', '--log',
-                        type=bool, default=False, metavar='',
+                        default=False, action='store_true',
                         help='If set (by defaul it is not) writes output to $HOME/.git_updater')
-    '''
     parser.add_argument('-v', '--verbose',
-                        type=bool, default=True, metavar='',
+                        default=False, action='store_true',
                         help='If set (by default it is) the program echoes output from "git pull" command')
-    '''
     args = parser.parse_args()
     return args
 
@@ -149,22 +150,24 @@ def main():
     if args.depth < 0:
         print("Depth can not be less than 0. Exiting...")
         sys.exit(1)
-    status = run_update(workpath, args.depth)
+    print("Starting update...")
+    status = run_update(workpath, args.depth, verbose=args.verbose)
     if len(status) == 0:
         print("No git repositories found in specifies path. Check whether --depth argument is correct. Exiting...")
         sys.exit(0)
-    #if args.verbose:
-    print(f"Last update on {datetime.datetime.now()} precessed {len(status)} repositories.")
-    for tup in status:
-        print(f"{tup[0]} status: {tup[1]}")
+    print(f"Last update on {datetime.datetime.now()}. Processed {len(status)} repositories.")
+    if args.verbose:
+        for tup in status:
+            print(f"{tup[0]} status: {tup[1]}")
     os.chdir(currdir)
     if args.log:
-        result = write_log(status)
+        result = write_log(status, args.verbose)
         if result:
             print("Log updated.")
         else:
-            print("Log not updated.")
-    print("All done for now...")
+            print("Log NOT updated.")
+            sys.exit(1)
+    print("Update completed. Exiting...")
 
 
 if __name__ == "__main__":
