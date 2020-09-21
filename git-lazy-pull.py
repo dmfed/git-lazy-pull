@@ -134,7 +134,7 @@ def parse_args():
                         default=False, action='store_true',
                         help='If set (by defaul it is not) writes output to $HOME/.git_updater')
     parser.add_argument('-v', '--verbose',
-                        default=False, action='store_true',
+                        default=True, action='store_true',
                         help='If set (by default it is) the program echoes output from "git pull" command')
     args = parser.parse_args()
     return args
