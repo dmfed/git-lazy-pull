@@ -134,8 +134,8 @@ def parse_args():
                         default=False, action='store_true',
                         help='If set (by defaul it is not) writes output to $HOME/.git_updater')
     parser.add_argument('-v', '--verbose',
-                        default=True, action='store_true',
-                        help='If set (by default it is) the program echoes output from "git pull" command')
+                        default=False, action='store_true',
+                        help='If set (by default it is not) the program echoes output from "git pull" command')
     args = parser.parse_args()
     return args
 
@@ -156,9 +156,8 @@ def main():
         print("No git repositories found in specifies path. Check whether --depth argument is correct. Exiting...")
         sys.exit(0)
     print(f"Last update on {datetime.datetime.now()}. Processed {len(status)} repositories.")
-    if args.verbose:
-        for tup in status:
-            print(f"{tup[0]} status: {tup[1]}")
+    for tup in status:
+        print(f"{tup[0]} status: {tup[1]}")
     os.chdir(currdir)
     if args.log:
         result = write_log(status, args.verbose)
