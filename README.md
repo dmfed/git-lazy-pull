@@ -12,9 +12,9 @@ Examples:
 
 **git-lazy-pull.py ~/mystuff** checks if there is a git repo in **~/mystuff** and does **git pull** in that directory.
 
-**git-lazy-pull.py ~/projects -d 1** will search for git repository in **~/projects** and all of its subdirectories and then try to pull updates in each.
+**git-lazy-pull.py ~/projects -d 1 -v** will search for git repository in **~/projects** and all of its subdirectories and then try to pull updates in each providing verbose output.
 
-If you want the script to write result to a file, use **git-lazy-pull.py -l 1** or **git-lazy-pull.py -l true**. By default the log is written to $HOME/.git_lazy_pull
+If you want the script to write result to a file use **git-lazy-pull.py -l**. By default the log is written to **$HOME/.git_lazy_pull**
 
 
 
